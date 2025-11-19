@@ -290,6 +290,11 @@
                 android:persistent="false"
                 android:summary="@string/smart_5g_summary"
                 settings:controller="com.android.settings.network.telephony.Smart5gPreferenceController"/>
+
+            <SwitchPreferenceCompat
+                android:key="force_lte_ca"
+                android:title="@string/force_lte_ca_title"
+                android:summary="@string/force_lte_ca_summary" />
         </PreferenceCategory>
 
         <com.android.settingslib.widget.UntitledPreferenceCategory
