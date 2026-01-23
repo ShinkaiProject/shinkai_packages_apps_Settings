@@ -366,4 +366,7 @@
     <string name="language_picker_page">Language picker page</string>
     <string name="search_region">Search regions</string>
     <string name="search_region_page">Search region page</string>
+
+    <!-- Shinkai Maintainer -->
+    <string name="shinkai_maintainer">Maintainer</string>
 </resources>
