@@ -377,4 +377,7 @@
     <!-- Force LTE_CA -->
     <string name="force_lte_ca_title">LTE carrier aggregation</string>
     <string name="force_lte_ca_summary">Enhances LTE bandwidth by aggregating supported bands</string>
+
+    <!-- Shinkai -->
+    <string name="shinkai_version">Shinkai version</string>
 </resources>
