@@ -73,7 +73,6 @@ open class FirmwareVersionScreen : PreferenceScreenMixin, PreferenceSummaryProvi
             +FirmwareVersionDetailPreference()
             +ShinkaiVersionPreference()
             +SecurityPatchLevelPreference()
-            +MainlineModuleVersionPreference()
             +ShinkaiMaintainerPreference()
             +BasebandVersionPreference()
             +KernelVersionPreference()
