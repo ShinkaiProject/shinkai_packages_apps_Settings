@@ -366,18 +366,4 @@
     <string name="language_picker_page">Language picker page</string>
     <string name="search_region">Search regions</string>
     <string name="search_region_page">Search region page</string>
-
-    <!-- Shinkai Maintainer -->
-    <string name="shinkai_maintainer">Maintainer</string>
-
-    <!-- Game Space -->
-    <string name="game_space_title">Game Space</string>
-    <string name="game_space_summary">Enhance your gaming experience</string>
-
-    <!-- Force LTE_CA -->
-    <string name="force_lte_ca_title">LTE carrier aggregation</string>
-    <string name="force_lte_ca_summary">Enhances LTE bandwidth by aggregating supported bands</string>
-
-    <!-- Shinkai -->
-    <string name="shinkai_version">Shinkai version</string>
 </resources>
