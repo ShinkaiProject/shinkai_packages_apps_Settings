@@ -406,6 +406,10 @@
     <string name="software_update_up_to_specific_date_summary">Updated to %1$s</string>
     <string name="system_update_entry_title">System update</string>
 
+    <!-- Spoof Option -->
+    <string name="spoof_option_title">Spoof Option</string>
+    <string name="spoof_option_summary">Configure key attestation and Play Store property spoofing</string>
+
     <!-- Keybox Data -->
     <string name="keybox_data_title">Configure keybox XML</string>
     <string name="keybox_data_summary">Configure system-wide key attestation spoofing. Tap Delete to reset to defaults.</string>
