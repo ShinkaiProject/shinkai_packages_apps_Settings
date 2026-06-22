@@ -564,7 +564,6 @@ public class DevelopmentSettingsDashboardFragment extends RestrictedDashboardFra
         final List<AbstractPreferenceController> controllers = new ArrayList<>();
         controllers.add(new MemoryUsagePreferenceController(context));
         controllers.add(new EnableWebAppMinterPreferenceController(context));
-        controllers.add(new CertifiedPropsPreferenceController(context));
         controllers.add(new BugReportPreferenceController(context));
         controllers.add(new BugReportHandlerPreferenceController(context));
         controllers.add(new SystemServerHeapDumpPreferenceController(context));

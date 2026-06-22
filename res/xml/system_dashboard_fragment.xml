@@ -195,6 +195,13 @@
             android:icon="@drawable/ic_additional_settings"
             android:fragment="com.android.settings.shinkai.AdditionalSettings"/>
 
+        <Preference
+            android:key="spoof_option"
+            android:title="@string/spoof_option_title"
+            android:summary="@string/spoof_option_summary"
+            android:icon="@drawable/ic_settings_security"
+            android:fragment="com.android.settings.system.SpoofOptionFragment" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
