@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:settings="http://schemas.android.com/apk/res-auto"
+    android:key="spoof_option_screen"
+    android:title="@string/spoof_option_title">
+
+    <SwitchPreferenceCompat
+        android:key="spoof_option_enabled"
+        android:title="@string/spoof_option_title"
+        android:summary="@string/spoof_option_summary"
+        settings:controller="com.android.settings.system.SpoofOptionController" />
+
+    <com.android.settings.development.KeyboxDataPreference
+        android:key="keybox_data_setting"
+        android:title="@string/keybox_data_title"
+        android:summary="@string/keybox_data_summary"
+        android:defaultValue=""
+        android:enabled="false" />
+
+    <com.android.settings.development.PifDataPreference
+        android:key="pif_data_setting"
+        android:title="@string/pif_data_title"
+        android:summary="@string/pif_data_summary"
+        android:defaultValue=""
+        android:enabled="false" />
+
+</PreferenceScreen>

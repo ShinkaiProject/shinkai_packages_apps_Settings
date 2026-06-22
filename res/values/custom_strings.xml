@@ -326,6 +326,10 @@
     <string name="app_list_search_apps">Search apps</string>
     <string name="app_list_loading">Loading apps\u2026</string>
 
+    <!-- Spoof Option -->
+    <string name="spoof_option_title">Spoof Option</string>
+    <string name="spoof_option_summary">Configure key attestation and Play Store property spoofing</string>
+
     <!-- Keybox Data -->
     <string name="keybox_data_title">Configure keybox XML</string>
     <string name="keybox_data_summary">Configure system-wide key attestation spoofing. Tap Delete to reset to defaults.</string>
