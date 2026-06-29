@@ -75,4 +75,8 @@
     <!-- Allow application downgrade -->
     <string name="allow_downgrade_title">Allow application downgrade</string>
     <string name="allow_downgrade_summary">Allow downgrading system applications, which may result in crashes and data loss</string>
+
+    <!-- backup -->
+    <string name="local_app_backup_restore_title">Local app backup and restore</string>
+    <string name="local_app_backup_restore_summary">Save APKs and app data as normal tar archives in internal storage</string>
 </resources>
