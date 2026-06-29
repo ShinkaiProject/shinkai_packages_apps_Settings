@@ -79,4 +79,8 @@
     <!-- Disable QS -->
     <string name="disable_qs_title">Hide QS on secure lock screen</string>
     <string name="disable_qs_summary">Prevent access to QS tiles on secure lock screen</string>
+
+    <!-- backup -->
+    <string name="local_app_backup_restore_title">Local app backup and restore</string>
+    <string name="local_app_backup_restore_summary">Save APKs and app data as normal tar archives in internal storage</string>
 </resources>
