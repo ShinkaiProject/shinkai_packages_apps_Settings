@@ -5,7 +5,7 @@
     android:key="spoof_option_screen"
     android:title="@string/spoof_option_title">
 
-    <SwitchPreferenceCompat
+    <com.android.settingslib.widget.MainSwitchPreference
         android:key="spoof_option_enabled"
         android:title="@string/spoof_option_title"
         android:summary="@string/spoof_option_summary"
