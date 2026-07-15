@@ -63,7 +63,7 @@ public class PifDataPreference extends Preference {
             Toast.makeText(getContext(), "User PIF data cleared", Toast.LENGTH_SHORT).show();
             callChangeListener(null);
 
-            killPackages();
+            killGms();
         });
     }
 
@@ -91,25 +91,23 @@ public class PifDataPreference extends Preference {
             Toast.makeText(getContext(), "JSON file loaded", Toast.LENGTH_SHORT).show();
             callChangeListener(json);
 
-            killPackages();
+            killGms();
         } catch (IOException e) {
             Log.e(TAG, "Failed to read JSON file", e);
             Toast.makeText(getContext(), "Failed to read JSON", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void killPackages() {
+    private void killGms() {
         try {
-            ActivityManager am = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
-            String[] packages = { "com.google.android.gms", "com.android.vending" };
-            for (String pkg : packages) {
-                am.getClass()
-                  .getMethod("forceStopPackage", String.class)
-                  .invoke(am, pkg);
-                Log.i(TAG, pkg + " process killed");
-            }
+            ActivityManager am = (ActivityManager)
+                    getContext().getSystemService(Context.ACTIVITY_SERVICE);
+            am.getClass()
+              .getMethod("forceStopPackage", String.class)
+              .invoke(am, "com.google.android.gms");
+            Log.i(TAG, "GMS process killed");
         } catch (Exception e) {
-            Log.e(TAG, "Failed to kill packages", e);
+            Log.e(TAG, "Failed to kill GMS process", e);
         }
     }
 }
