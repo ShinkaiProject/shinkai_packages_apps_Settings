@@ -30,8 +30,8 @@ import com.android.settings.core.BasePreferenceController;
 
 public class GameSpaceController extends BasePreferenceController {
 
-    private static final String GAME_PACKAGE = "io.chaldeaprjkt.gamespace";
-    private static final String GAME_SETTINGS = "io.chaldeaprjkt.gamespace.settings.SettingsActivity";
+    private static final String GAME_PACKAGE = "com.android.gamespace";
+    private static final String GAME_SETTINGS = "com.android.gamespace.settings.SettingsActivity";
 
     private final PackageManager mPackageManager;
 
