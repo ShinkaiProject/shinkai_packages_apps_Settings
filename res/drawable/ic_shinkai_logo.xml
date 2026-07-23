@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2026 Shinkai Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="42dp"
+    android:viewportWidth="620"
+    android:viewportHeight="1084">
+    <path
+        android:fillColor="@color/shinkai_logo_accent"
+        android:pathData="M494,6 L7,220 L7,618 L123,565 L125,299 L490,134 Z M125,1076 L612,862 L612,464 L496,517 L494,783 L129,948 Z M258,481 C264,502 271,525 266,549 C264,572 253,593 239,612 C260,605 283,599 307,604 C331,606 351,617 370,631 C364,610 358,587 362,563 C365,539 376,519 389,500 C368,506 345,512 321,508 C298,505 277,494 258,481 Z"/>
+</vector>

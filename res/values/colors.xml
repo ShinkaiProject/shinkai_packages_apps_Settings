@@ -328,4 +328,8 @@
     <color name="sc_materialColorSurfaceContainer">@android:color/system_surface_container_light</color>
     <color name="sc_materialColorOutline">@android:color/system_outline_light</color>
     <color name="sc_materialColorOutlineVariant">@android:color/system_outline_variant_light</color>
+
+   <!-- Shinkai Light Logo -->
+   <color name="shinkai_logo_accent">@android:color/system_accent1_600</color>
+
 </resources>
