@@ -124,5 +124,8 @@
     <color name="sc_materialColorSurfaceContainer">@android:color/system_surface_container_dark</color>
     <color name="sc_materialColorOutline">@android:color/system_outline_dark</color>
     <color name="sc_materialColorOutlineVariant">@android:color/system_outline_variant_dark</color>
+
+    <!-- Shinkai Logo Dark -->
+    <color name="shinkai_logo_accent">@android:color/system_accent1_200</color>
 </resources>
 

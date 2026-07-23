@@ -21,6 +21,12 @@
     android:title="@string/firmware_version"
     settings:keywords="@string/keywords_android_version">
 
+    <!-- Shinkai Prjkt logo -->
+    <com.android.settingslib.widget.LayoutPreference
+        android:key="shinkai_logo"
+        android:layout="@layout/shinkai_logo"
+        android:selectable="false"/>
+
     <!-- Android version -->
     <Preference
         android:key="os_firmware_version"
