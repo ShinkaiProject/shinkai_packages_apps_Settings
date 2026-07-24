@@ -36,4 +36,8 @@
     <!-- Override Mock Location restriction -->
     <string name="override_mock_location_title">Override MockLocation restriction</string>
     <string name="override_mock_location_summary">When enabled, apps cannot detect mock locations</string>
+
+    <!-- click to take partial screenshot -->
+    <string name="click_partial_screenshot_title">Click to partial screenshot</string>
+    <string name="click_partial_screenshot_summary">Short click Volume Down and Power to take partial screenshot</string>
 </resources>
