@@ -71,4 +71,8 @@
     <string name="search_apps">Search apps</string>
     <string name="hide_developer_status_title">Hide developer status</string>
     <string name="hide_developer_status_summary">Hide developer status from apps</string>
+
+    <!-- click to take partial screenshot -->
+    <string name="click_partial_screenshot_title">Click to partial screenshot</string>
+    <string name="click_partial_screenshot_summary">Short click Volume Down and Power to take partial screenshot</string>
 </resources>
