@@ -18,6 +18,7 @@ package com.android.settings.accessibility.colorandmotion.ui
 
 import android.content.Context
 import android.os.PowerManager
+import android.os.SystemProperties
 import android.provider.Settings
 import android.view.CrossWindowBlurListeners.CROSS_WINDOW_BLUR_SUPPORTED
 import com.android.settings.R
@@ -58,7 +59,10 @@ class BlurSwitchPreference :
         get() = R.string.keywords_blur_switch
 
     override fun storage(context: Context): KeyValueStore =
-        SettingsGlobalStore.get(context).apply { setDefaultValue(KEY, false) }
+        SettingsGlobalStore.get(context).apply {
+            setDefaultValue(KEY, SystemProperties.getBoolean(
+                    "ro.surface_flinger.blur_disabled_by_default", false))
+        }
 
     override fun getSummary(context: Context): CharSequence? {
         return context.getString(
