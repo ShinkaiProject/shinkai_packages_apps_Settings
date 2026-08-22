@@ -30,8 +30,6 @@ import com.android.settingslib.metadata.PreferenceSummaryProvider
 import com.android.settingslib.metadata.SensitivityLevel
 import com.android.settingslib.preference.PreferenceBinding
 
-import com.android.settings.deviceinfo.VersionUtils
-
 // LINT.IfChange
 class SimpleBuildNumberPreference :
     PersistentPreference<String>, PreferenceMetadata, PreferenceSummaryProvider, PreferenceBinding {
@@ -58,17 +56,7 @@ class SimpleBuildNumberPreference :
 
     override fun getSummary(context: Context): CharSequence? {
         val isRtl = context.resources.configuration.layoutDirection == LAYOUT_DIRECTION_RTL
-        val bidi = BidiFormatter.getInstance(isRtl)
-
-        val customVersion = VersionUtils.getCustomVersion()
-
-        return buildString {
-          append(bidi.unicodeWrap(Build.DISPLAY))
-          if (customVersion.isNotEmpty()) {
-            append("\n")
-            append(customVersion)
-          }
-        }
+        return BidiFormatter.getInstance(isRtl).unicodeWrap(Build.DISPLAY)
     }
 
     override fun bind(preference: Preference, metadata: PreferenceMetadata) {
