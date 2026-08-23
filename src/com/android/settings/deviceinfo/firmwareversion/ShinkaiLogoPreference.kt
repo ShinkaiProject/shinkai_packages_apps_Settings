@@ -28,6 +28,9 @@ class ShinkaiLogoPreference : PreferenceMetadata, PreferenceBinding {
     override val key: String
         get() = "shinkai_logo"
 
+    override val purpose: Int
+        get() = R.string.shinkai_logo_purpose
+
     override fun createWidget(context: Context): Preference =
         LayoutPreference(context, R.layout.shinkai_logo).apply {
             isSelectable = false

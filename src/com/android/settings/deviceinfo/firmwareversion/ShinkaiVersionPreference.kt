@@ -27,6 +27,7 @@ import com.android.settingslib.DeviceInfoUtils
 import com.android.settingslib.metadata.PreferenceAvailabilityProvider
 import com.android.settingslib.metadata.PreferenceMetadata
 import com.android.settingslib.metadata.PreferenceSummaryProvider
+import com.android.settingslib.metadata.preferencesapi.preconditions.PreconditionStability
 import com.android.settingslib.preference.PreferenceBinding
 
 class ShinkaiVersionPreference :
@@ -42,8 +43,16 @@ class ShinkaiVersionPreference :
     override val key: String
         get() = "shinkai_version"
 
+    override val purpose: Int
+        get() = R.string.shinkai_version_purpose
+
     override val title: Int
         get() = R.string.shinkai_version
+
+    override val availabilityDescription =
+        "The device must have the Shinkai version system property set."
+
+    override fun getAvailabilityStability() = PreconditionStability.STABLE_UNTIL_APK_UPDATE
 
     override fun intent(context: Context): Intent? =
         Intent(Intent.ACTION_VIEW)
