@@ -22,6 +22,7 @@ import com.android.settings.R
 import com.android.settingslib.metadata.PreferenceAvailabilityProvider
 import com.android.settingslib.metadata.PreferenceMetadata
 import com.android.settingslib.metadata.PreferenceSummaryProvider
+import com.android.settingslib.metadata.preferencesapi.preconditions.PreconditionStability
 import com.android.settingslib.preference.PreferenceBinding
 
 class ShinkaiMaintainerPreference :
@@ -37,8 +38,16 @@ class ShinkaiMaintainerPreference :
     override val key: String
         get() = "shinkai_maintainer"
 
+    override val purpose: Int
+        get() = R.string.shinkai_maintainer_purpose
+
     override val title: Int
         get() = R.string.shinkai_maintainer
+
+    override val availabilityDescription =
+        "The device must have the Shinkai maintainer system property set."
+
+    override fun getAvailabilityStability() = PreconditionStability.STABLE_UNTIL_APK_UPDATE
 
     override fun isAvailable(context: Context) = context.hasMaintainer()
 

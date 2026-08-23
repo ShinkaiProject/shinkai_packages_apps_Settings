@@ -18,9 +18,7 @@
 
     <!-- Shinkai Maintainer -->
     <string name="shinkai_maintainer">Maintainer</string>
-
-    <!-- Shinkai Version-->
-    <string name="shinkai_version">Shinkai version</string>
+    <string name="shinkai_maintainer_purpose">Shows the device maintainer for this Shinkai build</string>
 
     <!-- Game Space -->
     <string name="game_space_title">Game Space</string>
@@ -32,6 +30,8 @@
 
     <!-- Shinkai Version -->
     <string name="shinkai_version">Shinkai version</string>
+    <string name="shinkai_version_purpose">Shows the installed Shinkai build version</string>
+    <string name="shinkai_logo_purpose">Displays the Shinkai project logo</string>
 
     <!-- Override Mock Location restriction -->
     <string name="override_mock_location_title">Override MockLocation restriction</string>
