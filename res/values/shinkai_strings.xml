@@ -68,4 +68,8 @@
     <string name="adaptive_playback_timeout_5_min_summary">On (5 minutes)</string>
     <string name="adaptive_playback_timeout_10_min">10 minutes</string>
     <string name="adaptive_playback_timeout_10_min_summary">On (10 minutes)</string>
+
+    <!-- Allow application downgrade -->
+    <string name="allow_downgrade_title">Allow application downgrade</string>
+    <string name="allow_downgrade_summary">Allow downgrading system applications, which may result in crashes and data loss</string>
 </resources>

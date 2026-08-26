@@ -631,6 +631,11 @@
             android:title="@string/force_allow_on_external"
             android:summary="@string/force_allow_on_external_summary" />
 
+        <SwitchPreferenceCompat
+            android:key="allow_downgrade"
+            android:title="@string/allow_downgrade_title"
+            android:summary="@string/allow_downgrade_summary" />
+
         <Preference
             android:key="reset_shortcut_manager_throttling"
             android:title="@string/reset_shortcut_manager_throttling" />
