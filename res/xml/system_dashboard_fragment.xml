@@ -174,6 +174,12 @@
             android:key="developer_options"
             settings:controller="com.android.settings.system.DeveloperOptionsController"/>
 
+        <Preference
+            android:key="additional_settings"
+            android:title="@string/additional_settings_title"
+            android:icon="@drawable/ic_additional_settings"
+            android:fragment="com.android.settings.shinkai.AdditionalSettings"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

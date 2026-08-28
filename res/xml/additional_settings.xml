@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:settings="http://schemas.android.com/apk/res-auto"
+        android:key="additional_settings"
+        android:title="@string/additional_settings_title">
+
+    <!-- Allow application downgrade -->
+    <com.custom.settings.preferences.SystemSettingSwitchPreference
+        android:key="allow_downgrade"
+        android:title="@string/allow_downgrade_title"
+        android:summary="@string/allow_downgrade_summary"
+        android:defaultValue="false" />
+   
+</PreferenceScreen>
