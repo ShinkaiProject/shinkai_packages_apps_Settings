@@ -27,8 +27,8 @@
     android:clickable="false">
 
     <ImageView
-        android:layout_width="30dp"
-        android:layout_height="54dp"
+        android:layout_width="22dp"
+        android:layout_height="46dp"
         android:src="@drawable/ic_shinkai_logo"
         android:scaleType="fitCenter"
         android:contentDescription="@null"

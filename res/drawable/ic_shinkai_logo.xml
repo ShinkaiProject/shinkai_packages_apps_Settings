@@ -16,10 +16,12 @@
   -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
-    android:height="42dp"
-    android:viewportWidth="620"
-    android:viewportHeight="1084">
+    android:height="44dp"
+    android:viewportWidth="367"
+    android:viewportHeight="681">
     <path
         android:fillColor="@color/shinkai_logo_accent"
-        android:pathData="M494,6 L7,220 L7,618 L123,565 L125,299 L490,134 Z M125,1076 L612,862 L612,464 L496,517 L494,783 L129,948 Z M258,481 C264,502 271,525 266,549 C264,572 253,593 239,612 C260,605 283,599 307,604 C331,606 351,617 370,631 C364,610 358,587 362,563 C365,539 376,519 389,500 C368,506 345,512 321,508 C298,505 277,494 258,481 Z"/>
+        android:pathData="M85.4,331.6 L237.6,68.7 A45.9,45.9 0 0,0 158.2,22.7 L6,285.6 A45.9,45.9 0 0,0 85.4,331.6 Z
+                           M169.2,270.4 L103,384.6 A45.9,45.9 0 0,0 182.5,430.6 L248.6,316.4 A45.9,45.9 0 0,0 169.2,270.4 Z
+                           M208.1,657.7 L360.3,394.8 A45.9,45.9 0 0,0 280.8,348.8 L128.6,611.7 A45.9,45.9 0 0,0 208.1,657.7 Z"/>
 </vector>
