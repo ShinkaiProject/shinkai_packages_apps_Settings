@@ -10,5 +10,12 @@
         android:title="@string/allow_downgrade_title"
         android:summary="@string/allow_downgrade_summary"
         android:defaultValue="false" />
-   
+
+    <!-- Floating rotation button -->
+    <com.custom.settings.preferences.SystemSettingSwitchPreference
+        android:key="enable_rotation_button"
+        android:title="@string/floating_rotation_button_title"
+        android:summary="@string/floating_rotation_button_summary"
+        android:defaultValue="true" />   
+
 </PreferenceScreen>
