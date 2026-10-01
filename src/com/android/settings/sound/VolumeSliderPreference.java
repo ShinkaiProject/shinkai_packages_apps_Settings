@@ -22,6 +22,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -97,6 +98,10 @@ public class VolumeSliderPreference extends RestrictedSliderPreference {
 
     public void setStream(int stream) {
         mStream = stream;
+        Log.e("SliderDbg", "setStream key=" + getKey() + " stream=" + stream
+                + " max=" + mAudioManager.getStreamMaxVolume(mStream)
+                + " min=" + mAudioManager.getStreamMinVolumeInt(mStream)
+                + " enabled=" + isEnabled());
         setMax(mAudioManager.getStreamMaxVolume(mStream));
         // Use getStreamMinVolumeInt for non-public stream type
         // eg: AudioManager.STREAM_BLUETOOTH_SCO
@@ -128,6 +133,22 @@ public class VolumeSliderPreference extends RestrictedSliderPreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder view) {
         super.onBindViewHolder(view);
+        {
+            final Slider dbg = getSlider();
+            Log.e("SliderDbg", "bind key=" + getKey() + " stream=" + mStream
+                    + " prefMin=" + getMin() + " prefMax=" + getMax()
+                    + " from=" + dbg.getValueFrom() + " to=" + dbg.getValueTo()
+                    + " enabled=" + isEnabled());
+            if (dbg.getValueTo() <= dbg.getValueFrom()) {
+                Log.e("SliderDbg", "BAD RANGE key=" + getKey() + " stream=" + mStream,
+                        new Throwable());
+                // guard: keep Settings alive so the log survives
+                dbg.setValueFrom(0f);
+                dbg.setValueTo(1f);
+                dbg.setValue(0f);
+                dbg.setEnabled(false);
+            }
+        }
         mIconView = (ImageView) view.findViewById(com.android.internal.R.id.icon);
         mSuppressionTextView = (TextView) view.findViewById(R.id.suppression_text);
         mTitle = (TextView) view.findViewById(com.android.internal.R.id.title);
