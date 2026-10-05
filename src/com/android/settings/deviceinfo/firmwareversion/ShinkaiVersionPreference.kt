@@ -56,7 +56,7 @@ class ShinkaiVersionPreference :
 
     override fun intent(context: Context): Intent? =
         Intent(Intent.ACTION_VIEW)
-            .setData(Uri.parse("https://github.com/Shinkaiprjkt"))
+            .setData(Uri.parse("https://github.com/ShinkaiProject"))
 
     override fun isAvailable(context: Context) = context.getVersion().isNotEmpty()
 
