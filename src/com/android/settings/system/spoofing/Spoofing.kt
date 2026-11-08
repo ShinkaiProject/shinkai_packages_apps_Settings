@@ -34,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import com.android.internal.logging.nano.MetricsProto.MetricsEvent
-import com.android.internal.util.custom.PixelPropsUtils
 import com.android.settings.R
 import com.android.settings.SettingsPreferenceFragment
 import com.android.settings.core.SubSettingLauncher
@@ -46,7 +45,7 @@ import com.android.settingslib.spa.framework.theme.SettingsSpace
 /**
  * Spoofing hub. Compose host for the same entries the old preference screen had: the two
  * Play Integrity switches (TrickyStore, PIF) with their own sub-pages, device identity pages,
- * Tensor targets (non-Tensor devices only), the Photos / Snapchat overrides (installed apps
+ * the Photos / Snapchat overrides (installed apps
  * only) and a reset action. `res/xml/spoofing.xml` is kept only as the search index source.
  */
 @SearchIndexable
@@ -123,113 +122,82 @@ class Spoofing : SettingsPreferenceFragment() {
         private const val PHOTOS_PACKAGE = "com.google.android.apps.photos"
         private const val SNAPCHAT_PACKAGE = "com.snapchat.android"
 
-        private fun isInstalled(context: Context, pkg: String): Boolean =
-            try {
-                context.packageManager.getPackageInfo(pkg, PackageManager.PackageInfoFlags.of(0))
-                true
-            } catch (_: PackageManager.NameNotFoundException) {
-                false
-            }
-
-        private fun stopPackage(activityManager: ActivityManager?, pkg: String) {
-            if (activityManager == null) return
-            try {
-                val method = activityManager.javaClass.getMethod("forceStopPackage", String::class.java)
-                method.invoke(activityManager, pkg)
-            } catch (t: Throwable) {
-                Log.w(TAG, "Failed to force-stop $pkg", t)
-            }
+        private fun isInstalled(context: Context, pkg: String): Boolean = try {
+            context.packageManager.getPackageInfo(pkg, 0)
+            true
+        } catch (_: PackageManager.NameNotFoundException) {
+            false
         }
 
+        @JvmField
         val SEARCH_INDEX_DATA_PROVIDER = object : BaseSearchIndexProvider(R.xml.spoofing) {
             override fun getNonIndexableKeys(context: Context): List<String> {
                 val keys = super.getNonIndexableKeys(context).toMutableList()
-                if (!isInstalled(context, PHOTOS_PACKAGE)) {
-                    keys.add(PI_PHOTOS_SPOOF)
-                }
-                if (!isInstalled(context, SNAPCHAT_PACKAGE)) {
-                    keys.add(PI_SNAPCHAT_SPOOF)
-                }
+                if (!isInstalled(context, PHOTOS_PACKAGE)) keys.add(PI_PHOTOS_SPOOF)
+                if (!isInstalled(context, SNAPCHAT_PACKAGE)) keys.add(PI_SNAPCHAT_SPOOF)
                 return keys
             }
         }
-    }
 
-    @Composable
-    private fun SpoofingContent(
-        refreshKey: Int,
-        onOpen: (Class<*>, Int) -> Unit,
-        onAppSpoofChanged: (String) -> Unit,
-    ) {
-        val context = LocalContext.current
-        val resolver = context.contentResolver
+        @Composable
+        private fun SpoofingContent(
+            refreshKey: Int,
+            onOpen: (Class<*>, Int) -> Unit,
+            onAppSpoofChanged: (String) -> Unit,
+        ) {
+            val context = LocalContext.current
+            val resolver = context.contentResolver
 
-        // Master switch states are re-read whenever the screen comes back to foreground
-        var trickyStoreEnabled by remember(refreshKey) {
-            mutableStateOf(Settings.System.getInt(resolver, TRICKYSTORE_ENABLED_KEY, 1) != 0)
-        }
-        var pifEnabled by remember(refreshKey) {
-            mutableStateOf(Settings.System.getInt(resolver, PIF_ENABLED_KEY, 1) != 0)
-        }
-        var photosSpoof by remember {
-            mutableStateOf(Settings.Secure.getInt(resolver, PI_PHOTOS_SPOOF, 1) != 0)
-        }
-        var snapSpoof by remember {
-            mutableStateOf(Settings.Secure.getInt(resolver, PI_SNAPCHAT_SPOOF, 0) != 0)
-        }
+            val photosInstalled = remember { isInstalled(context, PHOTOS_PACKAGE) }
+            val snapInstalled = remember { isInstalled(context, SNAPCHAT_PACKAGE) }
 
-        val photosInstalled = remember { isInstalled(context, PHOTOS_PACKAGE) }
-        val snapInstalled = remember { isInstalled(context, SNAPCHAT_PACKAGE) }
+            var tsEnabled by remember(refreshKey) {
+                mutableStateOf(Settings.System.getInt(resolver, TRICKYSTORE_ENABLED_KEY, 1) != 0)
+            }
+            var pifEnabled by remember(refreshKey) {
+                mutableStateOf(Settings.System.getInt(resolver, PIF_ENABLED_KEY, 1) != 0)
+            }
+            var photosSpoof by remember(refreshKey) {
+                mutableStateOf(Settings.Secure.getInt(resolver, PI_PHOTOS_SPOOF, 1) != 0)
+            }
+            var snapSpoof by remember(refreshKey) {
+                mutableStateOf(Settings.Secure.getInt(resolver, PI_SNAPCHAT_SPOOF, 0) != 0)
+            }
+            var showResetDialog by remember { mutableStateOf(false) }
 
-        var showResetDialog by remember { mutableStateOf(false) }
-
-        if (showResetDialog) {
-            ExpressiveAlertDialog(
-                onDismissRequest = { showResetDialog = false },
-                title = { Text(stringResource(R.string.spoofing_reset_defaults_dialog_title)) },
-                text = { Text(stringResource(R.string.spoofing_reset_defaults_dialog_message)) },
-                confirmButton = {
-                    Text(
-                        stringResource(R.string.spoofing_reset_defaults_confirm),
-                        modifier = Modifier.clickableNoIndication {
+            if (showResetDialog) {
+                ExpressiveConfirmDialog(
+                    title = stringResource(R.string.spoofing_reset_defaults_dialog_title),
+                    message = stringResource(R.string.spoofing_reset_defaults_dialog_message),
+                    confirmText = stringResource(R.string.spoofing_reset_defaults_confirm),
+                    destructive = true,
+                    onConfirm = {
+                        try {
                             TrickyStore.resetAllSpoofDefaults(context)
-                            showResetDialog = false
                             Toast.makeText(
-                                context,
-                                R.string.spoofing_reset_defaults_done,
-                                Toast.LENGTH_SHORT,
+                                context, R.string.spoofing_reset_defaults_done, Toast.LENGTH_SHORT,
                             ).show()
-                        },
-                    )
-                },
-                dismissButton = {
-                    Text(
-                        stringResource(android.R.string.cancel),
-                        modifier = Modifier.clickableNoIndication { showResetDialog = false },
-                    )
-                },
-            )
-        }
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to reset spoof defaults", e)
+                        }
+                    },
+                    onDismiss = { showResetDialog = false },
+                )
+            }
 
-        ExpressiveColumn {
-            item {
+            ExpressiveScreen {
                 ExpressiveGroup(title = stringResource(R.string.spoofing_integrity_category)) {
                     item {
                         ExpressiveSwitchNavRow(
                             title = stringResource(R.string.tricky_store_title),
                             summary = stringResource(R.string.tricky_store_summary),
-                            checked = trickyStoreEnabled,
-                            onCheckedChange = { checked ->
-                                trickyStoreEnabled = checked
+                            checked = tsEnabled,
+                            onCheckedChange = {
+                                tsEnabled = it
                                 Settings.System.putInt(
-                                    resolver,
-                                    TRICKYSTORE_ENABLED_KEY,
-                                    if (checked) 1 else 0,
-                                )
+                                    resolver, TRICKYSTORE_ENABLED_KEY, if (it) 1 else 0)
                             },
-                            onClick = {
-                                onOpen(TrickyStore::class.java, R.string.tricky_store_title)
-                            },
+                            onClick = { onOpen(TrickyStore::class.java, R.string.tricky_store_title) },
                         )
                     }
                     item {
@@ -237,13 +205,9 @@ class Spoofing : SettingsPreferenceFragment() {
                             title = stringResource(R.string.play_integrity_fix_title),
                             summary = stringResource(R.string.play_integrity_fix_summary),
                             checked = pifEnabled,
-                            onCheckedChange = { checked ->
-                                pifEnabled = checked
-                                Settings.System.putInt(
-                                    resolver,
-                                    PIF_ENABLED_KEY,
-                                    if (checked) 1 else 0,
-                                )
+                            onCheckedChange = {
+                                pifEnabled = it
+                                Settings.System.putInt(resolver, PIF_ENABLED_KEY, if (it) 1 else 0)
                             },
                             onClick = {
                                 onOpen(PlayIntegrityFix::class.java, R.string.play_integrity_fix_title)

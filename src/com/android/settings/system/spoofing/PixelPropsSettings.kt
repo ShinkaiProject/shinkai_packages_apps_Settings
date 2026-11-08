@@ -79,6 +79,10 @@ private const val PP_TARGETS_KEY = "pi_pp_targets"
 private const val PP_MODEL_KEY   = "pi_pp_model"
 private const val PP_ENABLED_KEY = "pi_pp_spoof"
 
+// DEFAULT_PP_TARGETS now lives in PixelDeviceRepository.DEFAULT_PP_TARGETS (Java Set<String>),
+// shared with PixelPropsUtils rather than kept as a separate Kotlin copy.
+
+// PpAppEntry kept for external references; internally we use AppListEntry
 data class PpAppEntry(
     val packageName: String,
     val label: String,
@@ -118,47 +122,53 @@ private fun PixelPropsContent(context: android.content.Context) {
     val pm = context.packageManager
     val activityManager = context.getSystemService(ActivityManager::class.java)
     val scope = rememberCoroutineScope()
-    val isTablet = remember { PixelDeviceRepository.isTabletDevice(context) }
+
+    val isTablet = remember {
+        context.resources.configuration.smallestScreenWidthDp >= 600
+    }
+
+    // Mainline device gate — show unsupported card and bail
+    val isMainlineDevice = remember { PixelPropsUtils.isMainlinePixelDevice() }
+    if (isMainlineDevice) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(SettingsSpace.small1),
+            contentAlignment = Alignment.Center,
+        ) {
+            ExpressiveEmptyState(
+                icon = Icons.Default.Android,
+                title = stringResource(R.string.spoofing_pixel_props_title),
+                description = stringResource(R.string.pp_mainline_unsupported),
+            )
+        }
+        return
+    }
 
     var globalEnabled by remember {
         mutableStateOf(
             Settings.Secure.getInt(context.contentResolver, PP_ENABLED_KEY, 1) == 1,
         )
     }
-
+    var profiles by remember {
+        mutableStateOf(PixelDeviceRepository.FALLBACK_PROFILES)
+    }
     var selectedCodename by remember {
         mutableStateOf(
             Settings.Secure.getString(context.contentResolver, PP_MODEL_KEY)
-                ?: if (isTablet) "tangorpro"
-                else PixelDeviceRepository.getDefaultPhoneCodename(
-                    PixelDeviceRepository.FALLBACK_PROFILES,
-                ),
+                ?: if (isTablet) "tangorpro" else PixelDeviceRepository.getDefaultPhoneCodename(),
         )
     }
-    var menuExpanded by remember { mutableStateOf(false) }
-    var profiles by remember {
-        mutableStateOf<List<PixelDeviceRepository.DeviceProfile>>(emptyList())
-    }
-
+    var showModelDropdown by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showSystemApps by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
     val allApps = remember { mutableStateListOf<AppListEntry>() }
 
-    val hiddenApps = remember {
-        setOf(
-            "com.google.android.googlequicksearchbox",
-            "com.google.android.apps.photos",
-            "com.google.android.apps.pixel.agent",
-            "com.google.android.apps.pixel.creativeassistant",
-            "com.snapchat.android",
-        )
-    }
-
     fun readTargetsSet(): Set<String> {
         val raw = Settings.Secure.getString(context.contentResolver, PP_TARGETS_KEY)
-        return if (raw.isNullOrEmpty()) PixelDeviceRepository.DEFAULT_PP_TARGETS
-        else raw.split(",").toSet()
+        if (raw.isNullOrBlank()) return PixelDeviceRepository.DEFAULT_PP_TARGETS
+        return raw.split(",").filter { it.isNotBlank() }.toSet()
     }
 
     fun writeTargetsSet(targets: Set<String>) {
@@ -169,89 +179,108 @@ private fun PixelPropsContent(context: android.content.Context) {
         )
     }
 
+    // Fetch profiles in the background — stable-only, since prop spoofing
+    // should never present as a canary/beta build.
     LaunchedEffect(Unit) {
-        val loadedProfiles = withContext(Dispatchers.IO) {
-            val list = PixelDeviceRepository.getStableProfiles(context, false)
-            list.ifEmpty { PixelDeviceRepository.FALLBACK_PROFILES }
+        scope.launch(Dispatchers.IO) {
+            val fresh = PixelDeviceRepository.getStableProfiles(context)
+            val resolved = fresh.ifEmpty { PixelDeviceRepository.FALLBACK_PROFILES }
+            withContext(Dispatchers.Main) {
+                profiles = resolved
+                if (resolved.none { it.codename == selectedCodename }) {
+                    val defaultCodename = if (isTablet) "tangorpro"
+                        else PixelDeviceRepository.getDefaultPhoneCodename(resolved)
+                    selectedCodename = defaultCodename
+                    Settings.Secure.putString(
+                        context.contentResolver, PP_MODEL_KEY, defaultCodename)
+                }
+            }
         }
-        profiles = loadedProfiles
+    }
 
-        val defaultCodename = if (isTablet) "tangorpro"
-            else PixelDeviceRepository.getDefaultPhoneCodename(loadedProfiles)
-        val currentSetting = Settings.Secure.getString(context.contentResolver, PP_MODEL_KEY)
-        if (currentSetting.isNullOrEmpty()) {
-            selectedCodename = defaultCodename
-            Settings.Secure.putString(context.contentResolver, PP_MODEL_KEY, defaultCodename)
-        }
-
-        val initialTargets = withContext(Dispatchers.IO) { readTargetsSet() }
-        val loaded = withContext(Dispatchers.IO) {
-            val list = pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
-            list.filter { !hiddenApps.contains(it.packageName) }
-                .map { appInfo ->
+    // Load apps (re-runs when showSystemApps changes)
+    LaunchedEffect(showSystemApps) {
+        isLoading = true
+        withContext(Dispatchers.IO) {
+            val targetsSet = readTargetsSet().toMutableSet()
+            val installed = filterInstalledApps(
+                pm = pm,
+                showSystem = showSystemApps,
+                targeted = targetsSet,
+            )
+                .sortedWith(targetedFirstComparator(pm, targetsSet))
+                .map { app ->
                     AppListEntry(
-                        packageName = appInfo.packageName,
-                        label = appInfo.loadLabel(pm).toString(),
-                        icon = appInfo.loadIcon(pm),
-                        isSystem = (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0,
-                        isSelected = initialTargets.contains(appInfo.packageName),
+                        packageName = app.packageName,
+                        label = pm.getApplicationLabel(app).toString(),
+                        icon = runCatching { pm.getApplicationIcon(app) }.getOrNull(),
+                        isSystem = app.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM != 0,
+                        isSelected = app.packageName in targetsSet,
                     )
                 }
-                .sortedBy { it.label.lowercase() }
+
+            // Prune stale package names
+            val installedPkgs = installed.map { it.packageName }.toSet()
+            val pruned = targetsSet.filter { it in installedPkgs }.toSet()
+            if (pruned.size < targetsSet.size) writeTargetsSet(pruned)
+
+            withContext(Dispatchers.Main) {
+                allApps.clear()
+                allApps.addAll(installed)
+                isLoading = false
+            }
         }
-        allApps.clear()
-        allApps.addAll(loaded)
-        isLoading = false
     }
 
-    val selectedLabel = remember(selectedCodename, profiles) {
-        profiles.firstOrNull { it.codename == selectedCodename }?.label ?: selectedCodename
+    val filteredApps = remember(searchQuery, allApps.toList()) {
+        val q = searchQuery.lowercase()
+        allApps.filter { app ->
+            q.isEmpty() ||
+                app.label.lowercase().contains(q) ||
+                app.packageName.lowercase().contains(q)
+        }
     }
 
-    val filteredApps = allApps.filter { app ->
-        (showSystemApps || !app.isSystem) &&
-            (searchQuery.isEmpty() ||
-                app.label.contains(searchQuery, ignoreCase = true) ||
-                app.packageName.contains(searchQuery, ignoreCase = true))
-    }
+    val displayProfiles = remember(profiles) { profiles }
 
-    val selectedCount = allApps.count { it.isSelected }
+    val activeCount = allApps.count { it.isSelected }
+    val selectedProfile = profiles.find { it.codename == selectedCodename }
 
     Scaffold(
+        containerColor = Color.Transparent,
         contentWindowInsets = WindowInsets.navigationBars,
-        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = SettingsSpace.small2),
+                .padding(horizontal = SettingsSpace.small1),
         ) {
-            Spacer(modifier = Modifier.height(SettingsSpace.extraSmall6))
+            Spacer(modifier = Modifier.height(SettingsSpace.extraSmall4))
 
-            ExpressiveMasterSwitchRow(
-                titleText = stringResource(R.string.spoofing_pixel_props_title),
-                summaryText = when {
+            ExpressiveHeaderCard(
+                title = stringResource(R.string.spoofing_pixel_props_title),
+                subtitle = when {
                     !globalEnabled -> stringResource(R.string.app_spoofing_disabled)
-                    selectedCount == 0 -> stringResource(R.string.ts_no_targets)
-                    else -> stringResource(R.string.pp_target_count, selectedCount)
+                    activeCount == 0 -> stringResource(R.string.ts_no_targets)
+                    else -> stringResource(R.string.pp_target_count, activeCount)
                 },
-                isChecked = globalEnabled,
-                onChange = { enabled ->
-                    globalEnabled = enabled
+                checked = globalEnabled,
+                onCheckedChange = { checked ->
+                    globalEnabled = checked
                     Settings.Secure.putInt(
-                        context.contentResolver,
-                        PP_ENABLED_KEY,
-                        if (enabled) 1 else 0,
-                    )
+                        context.contentResolver, PP_ENABLED_KEY, if (checked) 1 else 0)
                     scope.launch(Dispatchers.IO) {
-                        killPackages(activityManager, allApps.map { it.packageName }.toSet())
+                        killPackages(activityManager, allApps.filter { it.isSelected }
+                            .map { it.packageName }.toSet())
                     }
                 },
             ) {
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    Icons.Default.Android,
                     contentDescription = null,
+                    tint = if (globalEnabled) MaterialTheme.colorScheme.onPrimary
+                           else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(26.dp),
                 )
             }
@@ -260,86 +289,85 @@ private fun PixelPropsContent(context: android.content.Context) {
 
             ExpressiveAnimatedVisibility(visible = globalEnabled) {
                 Column {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        ExpressiveActionRow(
-                            actions = listOf(
-                                ExpressiveAction(
-                                    text = "${stringResource(R.string.pp_spoof_as)}: $selectedLabel",
-                                    icon = Icons.Default.ArrowDropDown,
-                                    onClick = { menuExpanded = true },
-                                ),
-                            ),
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-
-                        DropdownMenuPopup(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false },
-                            shape = SettingsShape.CornerExtraLarge,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            tonalElevation = 6.dp,
-                            modifier = Modifier.heightIn(max = 400.dp),
-                        ) {
-                            DropdownMenuGroup(
-                                modifier = Modifier.padding(horizontal = SettingsSpace.extraSmall2),
-                            ) {
-                                profiles.forEachIndexed { index, profile ->
-                                    val isSelected = profile.codename == selectedCodename
-                                    DropdownMenuItem(
-                                        text = {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically,
-                                            ) {
-                                                Text(
-                                                    text = profile.label,
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                                )
-                                                if (isSelected) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Check,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.primary,
-                                                        modifier = Modifier.size(18.dp),
+                    // Model selector
+                    ExpressiveGroup(
+                        title = "",
+                        horizontalInset = 0.dp,
+                    ) {
+                        item {
+                            Box {
+                                ExpressiveRow(
+                                    title = selectedProfile?.model
+                                        ?: PixelDeviceRepository.DEVICE_MODEL_MAP[selectedCodename]
+                                        ?: selectedCodename,
+                                    summary = selectedProfile?.fingerprint,
+                                    onClick = { showModelDropdown = true },
+                                    trailing = {
+                                        Icon(
+                                            Icons.Default.ArrowDropDown,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    },
+                                )
+                                DropdownMenuPopup(
+                                    expanded = showModelDropdown,
+                                    onDismissRequest = { showModelDropdown = false },
+                                ) {
+                                    DropdownMenuGroup(
+                                        shapes = expressiveMenuGroupShapes(),
+                                        modifier = Modifier
+                                            .heightIn(max = 320.dp)
+                                            .expressiveVerticalScroll(),
+                                    ) {
+                                        displayProfiles.forEachIndexed { index, profile ->
+                                            val isSelected = profile.codename == selectedCodename
+                                            DropdownMenuItem(
+                                                selected = isSelected,
+                                                text = { Text(text = profile.model) },
+                                                shapes = MenuDefaults.itemShape(
+                                                    index = index,
+                                                    count = displayProfiles.size,
+                                                ),
+                                                trailingIcon = if (isSelected) {
+                                                    {
+                                                        Icon(
+                                                            Icons.Default.Check,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(MenuDefaults.TrailingIconSize),
+                                                        )
+                                                    }
+                                                } else null,
+                                                onClick = {
+                                                    selectedCodename = profile.codename
+                                                    Settings.Secure.putString(
+                                                        context.contentResolver,
+                                                        PP_MODEL_KEY,
+                                                        profile.codename,
                                                     )
-                                                }
-                                            }
-                                        },
-                                        onClick = {
-                                            selectedCodename = profile.codename
-                                            menuExpanded = false
-                                            Settings.Secure.putString(
-                                                context.contentResolver,
-                                                PP_MODEL_KEY,
-                                                profile.codename,
+                                                    showModelDropdown = false
+                                                    scope.launch(Dispatchers.IO) {
+                                                        killPackages(
+                                                            activityManager,
+                                                            allApps.filter { it.isSelected }
+                                                                .map { it.packageName }.toSet(),
+                                                        )
+                                                    }
+                                                },
                                             )
-                                            val targeted = allApps.filter { it.isSelected }
-                                                .map { it.packageName }.toSet()
-                                            scope.launch(Dispatchers.IO) {
-                                                killPackages(activityManager, targeted)
-                                            }
-                                        },
-                                        shape = ListItemDefaults.segmentedShapes(
-                                            index = index,
-                                            count = profiles.size,
-                                        ).shape,
-                                        colors = MenuDefaults.itemColors(
-                                            textColor = if (isSelected) MaterialTheme.colorScheme.primary
-                                                else MaterialTheme.colorScheme.onSurface,
-                                        ),
-                                    )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(SettingsSpace.extraSmall4))
+                    Spacer(modifier = Modifier.height(SettingsSpace.extraSmall6))
 
                     AppPickerSearchField(
                         query = searchQuery,
                         onQueryChange = { searchQuery = it },
+                        enabled = globalEnabled,
                     )
 
                     Spacer(modifier = Modifier.height(SettingsSpace.extraSmall4))
@@ -348,18 +376,16 @@ private fun PixelPropsContent(context: android.content.Context) {
                         showSystemApps = showSystemApps,
                         onToggleSystemApps = { showSystemApps = !showSystemApps },
                         onSelectAll = {
-                            filteredApps.forEach { app ->
-                                val i = allApps.indexOfFirst {
-                                    it.packageName == app.packageName }
-                                if (i >= 0 && !allApps[i].isSelected) {
+                            filteredApps.forEach { f ->
+                                val i = allApps.indexOfFirst { it.packageName == f.packageName }
+                                if (i >= 0 && !allApps[i].isSelected)
                                     allApps[i] = allApps[i].copy(isSelected = true)
-                                    scope.launch(Dispatchers.IO) {
-                                        stopPackage(activityManager, app.packageName) }
-                                }
                             }
-                            val snapshot = allApps.filter { it.isSelected }
-                                .map { it.packageName }.toSet()
-                            scope.launch(Dispatchers.IO) { writeTargetsSet(snapshot) }
+                            scope.launch(Dispatchers.IO) {
+                                val current = allApps.filter { it.isSelected }
+                                    .map { it.packageName }.toSet()
+                                writeTargetsSet(current)
+                            }
                         },
                         onReset = {
                             allApps.indices.forEach { i ->
