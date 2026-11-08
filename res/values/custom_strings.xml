@@ -466,30 +466,6 @@
     <string name="action_select_all">Select all</string>
     <string name="common_clear_search">Clear search</string>
     <string name="common_system_badge">SYS</string>
-
-    <!-- Private DNS -->
-    <string name="private_dns_hostname_adguard" translatable="false">dns.adguard.com</string>
-    <string name="private_dns_hostname_cleanbrowsing" translatable="false">security-filter-dns.cleanbrowsing.org</string>
-    <string name="private_dns_hostname_cloudflare" translatable="false">one.one.one.one</string>
-    <string name="private_dns_hostname_cloudflare_block_malware" translatable="false">security.cloudflare-dns.com</string>
-    <string name="private_dns_hostname_cloudflare_block_malware_and_adult_content" translatable="false">family.cloudflare-dns.com</string>
-    <string name="private_dns_hostname_open_dns" translatable="false">dns.opendns.com</string>
-    <string name="private_dns_hostname_quad9" translatable="false">dns.quad9.net</string>
-    <string name="private_dns_hostname_quad9_ecs" translatable="false">dns11.quad9.net</string>
-    <string name="private_dns_hostname_quad9_unsecured" translatable="false">dns10.quad9.net</string>
-    <string name="private_dns_hostname_quad9_unsecured_ecs" translatable="false">dns12.quad9.net</string>
-    <string name="private_dns_mode_adguard" translatable="false">AdGuard DNS</string>
-    <string name="private_dns_mode_cleanbrowsing" translatable="false">Cleanbrowsing DNS</string>
-    <string name="private_dns_mode_cloudflare" translatable="false">Cloudflare DNS</string>
-    <string name="private_dns_mode_cloudflare_block_malware" translatable="false">Cloudflare Block Malware DNS</string>
-    <string name="private_dns_mode_cloudflare_block_malware_and_adult_content" translatable="false">Cloudflare Block Malware and Adult Content DNS</string>
-    <string name="private_dns_mode_open_dns" translatable="false">Open DNS</string>
-    <string name="private_dns_mode_quad9" translatable="false">Quad9 DNS</string>
-    <string name="private_dns_mode_quad9_ecs" translatable="false">Quad9 with ECS DNS</string>
-    <string name="private_dns_mode_quad9_unsecured" translatable="false">Quad9 Unsecured DNS</string>
-    <string name="private_dns_mode_quad9_unsecured_ecs" translatable="false">Quad9 Unsecured with ECS DNS</string>
-
-    <!-- Spoofing -->
     <string name="action_add_installed">Add installed</string>
     <string name="action_delete">Delete</string>
     <string name="action_import">Import</string>
@@ -523,6 +499,10 @@
     <string name="custom_spoof_profile_product">Product (optional)</string>
     <string name="edit">Edit</string>
     <string name="hide_system_apps">Hide system apps</string>
+    <string name="miscellaneous_app_downgrade_summary">Allow downgrading system apps. This may cause crashes and data loss.</string>
+    <string name="miscellaneous_app_downgrade_title">Allow app downgrade</string>
+    <string name="miscellaneous_pairip_activity_block_summary">Prevent apps from showing the "Get this app from Play" screen when not installed via the Play Store</string>
+    <string name="miscellaneous_pairip_activity_block_title">Block PairIP license check</string>
     <string name="pif_active_config">Active configuration</string>
     <string name="pif_active_model">Active: %1$s</string>
     <string name="pif_advanced_settings">Advanced spoofing</string>
@@ -568,6 +548,26 @@
     <string name="pp_empty_description">Selected apps will report the chosen Pixel device identity to unlock Pixel-exclusive features</string>
     <string name="pp_spoof_as">Spoof as</string>
     <string name="pp_target_count">Spoofing %1$d app(s) as Pixel</string>
+    <string name="private_dns_hostname_adguard" translatable="false">dns.adguard.com</string>
+    <string name="private_dns_hostname_cleanbrowsing" translatable="false">security-filter-dns.cleanbrowsing.org</string>
+    <string name="private_dns_hostname_cloudflare" translatable="false">one.one.one.one</string>
+    <string name="private_dns_hostname_cloudflare_block_malware" translatable="false">security.cloudflare-dns.com</string>
+    <string name="private_dns_hostname_cloudflare_block_malware_and_adult_content" translatable="false">family.cloudflare-dns.com</string>
+    <string name="private_dns_hostname_open_dns" translatable="false">dns.opendns.com</string>
+    <string name="private_dns_hostname_quad9" translatable="false">dns.quad9.net</string>
+    <string name="private_dns_hostname_quad9_ecs" translatable="false">dns11.quad9.net</string>
+    <string name="private_dns_hostname_quad9_unsecured" translatable="false">dns10.quad9.net</string>
+    <string name="private_dns_hostname_quad9_unsecured_ecs" translatable="false">dns12.quad9.net</string>
+    <string name="private_dns_mode_adguard" translatable="false">AdGuard DNS</string>
+    <string name="private_dns_mode_cleanbrowsing" translatable="false">Cleanbrowsing DNS</string>
+    <string name="private_dns_mode_cloudflare" translatable="false">Cloudflare DNS</string>
+    <string name="private_dns_mode_cloudflare_block_malware" translatable="false">Cloudflare Block Malware DNS</string>
+    <string name="private_dns_mode_cloudflare_block_malware_and_adult_content" translatable="false">Cloudflare Block Malware and Adult Content DNS</string>
+    <string name="private_dns_mode_open_dns" translatable="false">Open DNS</string>
+    <string name="private_dns_mode_quad9" translatable="false">Quad9 DNS</string>
+    <string name="private_dns_mode_quad9_ecs" translatable="false">Quad9 with ECS DNS</string>
+    <string name="private_dns_mode_quad9_unsecured" translatable="false">Quad9 Unsecured DNS</string>
+    <string name="private_dns_mode_quad9_unsecured_ecs" translatable="false">Quad9 Unsecured with ECS DNS</string>
     <string name="remove">Remove</string>
     <string name="save">Save</string>
     <string name="show_system_apps">Show system apps</string>
@@ -699,8 +699,9 @@
     <string name="ts_verification_mode_auto">Auto</string>
     <string name="ts_verification_skip_count">%1$d skip</string>
     <string name="ts_wipe_playstore_message">Play Store caches integrity verdicts. Clear its data now so the new keybox takes effect right away? This will sign you out and clear its local cache and download queue.</string>
+    <string name="usb_default_config_summary">Choose the default behavior when connected to a device via USB</string>
+    <string name="usb_default_config_title">USB configuration</string>
     <string name="user_select_spoofing_profile_title">Select spoofing profile</string>
     <string name="user_selectable_app_spoofing_summary">Spoof device properties for specific apps and games</string>
     <string name="user_selectable_app_spoofing_title">App and game spoofing</string>
-</resources>
 </resources>
