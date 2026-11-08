@@ -15,4 +15,10 @@
         <item quantity="other">Up to <xliff:g id="device_num">%1$d</xliff:g> devices can connect to this hotspot</item>
         <item quantity="one">Up to <xliff:g id="device_num">%1$d</xliff:g> device can connect to this hotspot</item>
     </plurals>
+
+    <!-- App Lock -->
+    <plurals name="app_lock_summary_count">
+        <item quantity="one">1 app locked</item>
+        <item quantity="other"><xliff:g id="count" example="3">%d</xliff:g> apps locked</item>
+    </plurals>
 </resources>
