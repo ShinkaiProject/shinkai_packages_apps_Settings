@@ -98,7 +98,7 @@ class PixelPropsSettings : SettingsPreferenceFragment() {
         requireActivity().title = getString(R.string.spoofing_pixel_props_title)
     }
 
-    override fun getMetricsCategory() = MetricsProto.MetricsEvent.PAGE_VISIBLE
+    override fun getMetricsCategory() = MetricsProto.MetricsEvent.VIEW_UNKNOWN
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {}
 

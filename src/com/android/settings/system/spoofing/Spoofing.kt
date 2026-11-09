@@ -90,7 +90,7 @@ class Spoofing : SettingsPreferenceFragment() {
         pendingKill?.let { handler.removeCallbacks(it) }
     }
 
-    override fun getMetricsCategory(): Int = MetricsEvent.PAGE_VISIBLE
+    override fun getMetricsCategory(): Int = MetricsEvent.VIEW_UNKNOWN
 
     private fun openPage(destination: Class<*>, titleRes: Int) {
         SubSettingLauncher(requireContext())

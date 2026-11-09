@@ -193,7 +193,7 @@ class TrickyStoreAppSettings : SettingsPreferenceFragment() {
         requireActivity().title = getString(R.string.tricky_store_title)
     }
 
-    override fun getMetricsCategory() = MetricsProto.MetricsEvent.PAGE_VISIBLE
+    override fun getMetricsCategory() = MetricsProto.MetricsEvent.VIEW_UNKNOWN
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {}
 
