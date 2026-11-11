@@ -15,4 +15,16 @@
         <item quantity="other">Up to <xliff:g id="device_num">%1$d</xliff:g> devices can connect to this hotspot</item>
         <item quantity="one">Up to <xliff:g id="device_num">%1$d</xliff:g> device can connect to this hotspot</item>
     </plurals>
+
+    <!-- App Lock -->
+    <plurals name="app_lock_summary_count">
+        <item quantity="one">1 app locked</item>
+        <item quantity="other"><xliff:g id="count" example="3">%d</xliff:g> apps locked</item>
+    </plurals>
+
+    <!-- TrickyStore -->
+    <plurals name="ts_added_installed_count">
+        <item quantity="one">Added %d app to targets</item>
+        <item quantity="other">Added %d apps to targets</item>
+    </plurals>
 </resources>
