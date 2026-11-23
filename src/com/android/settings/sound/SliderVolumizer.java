@@ -188,10 +188,6 @@ public class SliderVolumizer implements OnSliderTouchListener, OnChangeListener,
         }
 
         mMaxStreamVolume = mAudioManager.getStreamMaxVolume(mStreamType);
-        Log.e("SliderDbg", "volumizer ctor stream=" + mStreamType
-                + " max=" + mMaxStreamVolume
-                + " min=" + mAudioManager.getStreamMinVolumeInt(mStreamType)
-                + " group=" + mVolumeGroupId);
         mCallback = callback;
         mOriginalStreamVolume = mAudioManager.getStreamVolume(mStreamType);
         mLastAudibleStreamVolume = mAudioManager.getLastAudibleStreamVolume(mStreamType);
@@ -283,13 +279,12 @@ public class SliderVolumizer implements OnSliderTouchListener, OnChangeListener,
         }
         mSlider = slider;
         mSlider.clearOnChangeListeners();
-        Log.e("SliderDbg", "setSlider stream=" + mStreamType
-                + " max=" + mMaxStreamVolume
-                + " sliderFrom=" + mSlider.getValueFrom()
-                + " sliderTo(before)=" + mSlider.getValueTo());
-        if (mMaxStreamVolume <= mSlider.getValueFrom()) {
-            Log.e("SliderDbg", "BAD MAX in setSlider stream=" + mStreamType,
-                    new Throwable());
+        final float from = mSlider.getValueFrom();
+        final float to = mMaxStreamVolume;
+        if (to <= from) {
+            Log.w(TAG, "setSlider: invalid slider range stream=" + mStreamType
+                    + " from=" + from + " max=" + mMaxStreamVolume);
+            mSlider.setValueTo(from + 1f);
             mSlider.setEnabled(false);
             return;
         }
