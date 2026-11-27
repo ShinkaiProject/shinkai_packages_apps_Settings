@@ -86,6 +86,14 @@
     </Preference>
 
     <Preference
+        android:key="sandbox_settings"
+        android:title="@string/sandbox_title"
+        android:summary="@string/sandbox_summary"
+        android:order="-993"
+        settings:controller="com.android.settings.applications.SandboxController">
+    </Preference>
+
+    <Preference
         android:key="app_lock_settings"
         android:title="@string/app_lock_title"
         android:summary="@string/app_lock_summary"

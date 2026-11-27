@@ -27,6 +27,10 @@
     <string name="game_space_title">Game Space</string>
     <string name="game_space_summary">Enhance your gaming experience</string>
 
+    <!-- Sandbox -->
+    <string name="sandbox_title">Sandbox</string>
+    <string name="sandbox_summary">Manage isolated and protected apps</string>
+
     <!-- Force LTE_CA -->
     <string name="force_lte_ca_title">LTE carrier aggregation</string>
     <string name="force_lte_ca_summary">Enhances LTE bandwidth by aggregating supported bands</string>
